@@ -7,26 +7,55 @@
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<style>
+    .ProseMirror-menubar {
+        min-height: 57px !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        border: 2px solid #bbb1ff;
+        border-radius: 20px;
+    }
+
+    .ProseMirror-example-setup-style {
+        border: 2px solid #bbb1ff;
+        border-radius: 25px;
+        margin-top: 2rem;
+        height: 450px;
+        padding: 1rem;
+    }
+
+    .ProseMirror-menuitem {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        height: 2rem;
+        cursor: pointer;
+    }
+
+    .ProseMirror ul {
+        display: block;
+        list-style-type: disc;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        padding-inline-start: 40px;
+        unicode-bidi: isolate;
+    }
+
+    .ProseMirror ol {
+        display: block;
+        list-style-type: decimal;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        padding-inline-start: 40px;
+        unicode-bidi: isolate;
+    }
+</style>
 
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-6">
-
-    <div class="w-full max-w-3xl bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden">
-
-        <!-- Toolbar -->
-        <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <button class="btn">B</button>
-            <button class="btn italic">I</button>
-            <div class="w-px h-6 bg-slate-300 mx-2"></div>
-            <button class="btn">H1</button>
-            <button class="btn">H2</button>
-            <button class="btn">¶</button>
-        </div>
-
-        <!-- Editor -->
-        <div id="editor" class="editor-area"></div>
-
-    </div>
-     <div id="editor"></div>
+    <div id="editor" class="shadow-lg p-4 rounded-lg"></div>
     <div id="content"></div>
     <script type="module" src="index.js"></script>
 </body>
