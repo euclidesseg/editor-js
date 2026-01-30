@@ -13,16 +13,21 @@
         display: flex;
         justify-content: space-between;
         align-items: start;
-        border: 2px solid #bbb1ff;
-        border-radius: 20px;
+        border-bottom: 2px solid #bbb1ff;
+        background-color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     .ProseMirror-example-setup-style {
-        border: 2px solid #bbb1ff;
-        border-radius: 25px;
         margin-top: 2rem;
-        height: 450px;
-        padding: 1rem;
+        height: auto;
+        min-height: 450px;
+        padding: 1rem 6rem;
+    }
+    .ProseMirror-example-setup-style:focus-visible{
+        outline: none;
     }
 
     .ProseMirror-menuitem {
@@ -52,11 +57,28 @@
         padding-inline-start: 40px;
         unicode-bidi: isolate;
     }
+    .ProseMirror-menubar-wrapper{
+        height: 600px;
+        overflow-y: auto;
+    }
+    .contend-editor{
+        width: 800px;
+        height: 600px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+        border-radius: 12px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+    }
 </style>
 
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-6">
-    <div id="editor" class="shadow-lg p-4 rounded-lg"></div>
-    <div id="content"></div>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-6 overflow-hidden">
+    <section class="contend-editor">
+        
+        <div id="editor" class="w-full rounded-lg sticky bg-white top-6 z-10 overflow-y-auto relative">
+        </div>
+        <div id="content"></div>
+    </section>
     <script type="module" src="index.js"></script>
 </body>
 
