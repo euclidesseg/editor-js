@@ -7,6 +7,10 @@ import { keymap } from "https://esm.sh/prosemirror-keymap";
 import { baseKeymap } from "https://esm.sh/prosemirror-commands";
 import { toggleMark, setBlockType } from "https://esm.sh/prosemirror-commands";
 import { addListNodes } from "https://esm.sh/prosemirror-schema-list";
+import { wrapInList } from "https://esm.sh/prosemirror-schema-list";
+import { splitListItem } from "https://esm.sh/prosemirror-schema-list";
+
+
 
 
 
@@ -259,16 +263,8 @@ setBlockType(mySchema.nodes.warning_block)(view.state, view.dispatch);
 // Significa: "aquí dentro va el contenido del párrafo (el texto)"
 
 
-// creamos nustro node ol (list item)
-const olDOM = ["ol", ["ol", 0]]
+// creamos nustros nodes ol, ul, li (list item)
 
-
-const ol={
-  content:"inline*",
-  group:'block',
-  parseDom:[{tag:'ol'}],
-  toDOM(){ return olDOM}
-}
 
 const paragraph = {
   ...schema.spec.nodes.get("paragraph"),
@@ -309,22 +305,20 @@ const strike = {
   }
 };
 
-
-nodes = nodes.addToEnd("ol", ol)
-console.log(schema)
-
-
 //Un botón solo puede aplicar formatos que estén definidos en: marks: schema.spec.marks de promisemirror-schema-basic
 const mySchema = new Schema({
   nodes: addListNodes(nodes, "paragraph block*", "block"),
   marks: schema.spec.marks.addToEnd("strike", strike)
 });
 
+console.log(mySchema)
 // Aquí conectamos combinaciones de teclas con comandos del editor
 // "Mod" significa Ctrl (Windows) o Cmd (Mac)
 const myKeymap = keymap({
   "Mod-b": toggleMark(mySchema.marks.strong),
   "Mod-i": toggleMark(mySchema.marks.em),
+  // agrega una nuevo item de lista
+  "Enter": splitListItem(mySchema.nodes.list_item),
 });
 
 
@@ -372,28 +366,41 @@ document.getElementById("boldBtn").onclick = () => {
   view.focus();
 };
 
-document.getElementById("boldBtn").onclick = () => {
-  toggleMark(mySchema.marks.strong)(view.state, view.dispatch);
-  view.focus();
-};
 document.getElementById("italicBtn").onclick = () => {
   toggleMark(mySchema.marks.em)(view.state, view.dispatch);
   view.focus();
 };
+
+// Listas
 document.getElementById("bulletListBtn").onclick = () => {
-  setBlockType(mySchema.nodes.ol)(view.state, view.dispatch);
+  wrapInList(mySchema.nodes.bullet_list)(view.state, view.dispatch);
   view.focus();
 };
+document.getElementById("orderListBtn").onclick = () => {
+  wrapInList(mySchema.nodes.ordered_list)(view.state, view.dispatch);
+  view.focus();
+};
+// Listas
 
-alignLeftBtn.onclick = () => setTextAlign("left")(view.state, view.dispatch);
-alignCenterBtn.onclick = () => setTextAlign("center")(view.state, view.dispatch);
-alignRightBtn.onclick = () => setTextAlign("right")(view.state, view.dispatch);
-alignJustifyBtn.onclick = () => setTextAlign("justify")(view.state, view.dispatch);
 
+// Alineacion de parrafos
+document.getElementById("alignLeftBtn").onclick = () =>
+  setTextAlign("left")(view.state, view.dispatch);
+
+document.getElementById("alignCenterBtn").onclick = () =>
+  setTextAlign("center")(view.state, view.dispatch);
+
+document.getElementById("alignRightBtn").onclick = () =>
+  setTextAlign("right")(view.state, view.dispatch);
+
+document.getElementById("alignJustifyBtn").onclick = () =>
+  setTextAlign("justify")(view.state, view.dispatch);
 
 function setTextAlign(align) {
   return setBlockType(mySchema.nodes.paragraph, { textAlign: align });
 }
+// Alineacion de parrafos
+
 document.getElementById("codeBlockBtn").onclick = () => {
   setBlockType(mySchema.nodes.code_block)(view.state, view.dispatch);
   view.focus();
@@ -402,4 +409,32 @@ document.getElementById("codeBlockBtn").onclick = () => {
 document.getElementById("strikeBtn").onclick = () => {
   toggleMark(mySchema.marks.strike)(view.state, view.dispatch);
   view.focus();
+}
+
+
+document.getElementById("linkBtn").onclick = () => {
+  const url = prompt("Introduce la URL");
+
+  if (!url) return;
+
+  toggleMark(
+    mySchema.marks.link,
+    { href: url, title: url } // 👈 atributos
+  )(view.state, view.dispatch);
+
+  view.focus();
+};
+
+
+function applyLinkMark(state, dispatch, href, title= null) {
+  const { from, to } = state.selection;
+  const linkType = state.schema.marks.link;
+
+  if (linkType) {
+    const attrs = { href, title };
+    const tr = state.tr.addMark(from, to, linkType.create(attrs));
+    dispatch(tr);
+    return true;
+  }
+  return false;
 }
