@@ -513,7 +513,7 @@ document.getElementById('undoBtn').onclick = () => {
   undo(view.state, view.dispatch);
   view.focus();
 }
-document.getElementById('   ').onclick = () => {
+document.getElementById('redoBtn').onclick = () => {
   redo(view.state, view.dispatch);
   view.focus();
 }

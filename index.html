@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Eulides-editor</title>
 </head>
 <style>
     :root {
@@ -13,6 +12,16 @@
         --color-brand-lime: #d5ee3c;
     }
 
+    body{
+        padding: 1.5rem;
+        background-color: rgb(241 245 249);;
+        display: flex;
+        justify-content: center;
+        align-items: c;
+    }
+    .euclides-editor-nav button{
+        border: none;
+    }
     .ProseMirror-menubar {
         min-height: 57px !important;
         display: flex;
@@ -160,7 +169,7 @@
     }
 </style>
 
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-6 overflow-hidden">
+<body>
     <section class="contend-editor">
         <nav class="euclides-editor-nav">
             <button id="boldBtn">
