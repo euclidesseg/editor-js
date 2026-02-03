@@ -2,7 +2,7 @@ import { EditorState } from "https://esm.sh/prosemirror-state";
 import { EditorView } from "https://esm.sh/prosemirror-view";
 import { Schema, DOMParser } from "https://esm.sh/prosemirror-model";
 import { schema } from "https://esm.sh/prosemirror-schema-basic";
-import { history } from "https://esm.sh/prosemirror-history";
+import { history, undo, redo } from "https://esm.sh/prosemirror-history";
 import { keymap } from "https://esm.sh/prosemirror-keymap";
 import { baseKeymap } from "https://esm.sh/prosemirror-commands";
 import { toggleMark, setBlockType, chainCommands } from "https://esm.sh/prosemirror-commands";
@@ -319,6 +319,9 @@ console.log(mySchema)
 const myKeymap = keymap({
   "Mod-b": toggleMark(mySchema.marks.strong),
   "Mod-i": toggleMark(mySchema.marks.em),
+  "Mod-i": toggleMark(mySchema.marks.em),
+  "Mod-z": undo,
+  "Mod-y": redo,
   // agrega una nuevo item de lista
   "Enter": splitListItem(mySchema.nodes.list_item),
 });
@@ -430,24 +433,60 @@ document.getElementById("linkBtn").onclick = () => {
   view.focus();
 };
 
-document.addEventListener('click', (event) => {
-const isClickedHeadingButton = event.target.closest('#btn-heading');
-  if (!isClickedHeadingButton) {
-    const headingOptions = document.getElementById('heading-options');
-    if (headingOptions) {
-      headingOptions.remove();
-    }
-  }
-  const headingOptions = document.getElementById('heading-options');
 
-  if (headingOptions) {
-    headingOptions.remove();
+
+const headingContainer = document.getElementById('heading-container');
+const headingBtn = document.getElementById('btn-heading');
+
+document.addEventListener('click', (event) => {
+  const clickedBtn = event.target.closest('#btn-heading');
+  const options = document.getElementById('heading-options');
+
+  // Cerrar si se hace click fuera
+  if (!clickedBtn && options) {
+    options.remove();
     return;
   }
+
+  // Si clic en botón principal
+  if (clickedBtn) {
+    if (options) {
+      options.remove();
+      return;
+    }
+    createHeadingMenu();
+  }
+});
+
+function createHeadingMenu() {
   const div = document.createElement('div');
   div.id = 'heading-options';
-  div.innerHTML = `
-    <button class="heading-option" data-level="1">
+  div.innerHTML = getHeadingOptionsHTML();
+
+  headingContainer.appendChild(div);
+
+  // 🔥 UN SOLO LISTENER (delegación)
+  div.addEventListener('click', (e) => {
+    const button = e.target.closest('button');
+    if (!button) return;
+
+    const level = Number(button.dataset.level);
+
+    // Obtener SVG del botón correcto
+    const svg = button.querySelector('svg');
+    headingBtn.querySelector('span').innerHTML = svg.outerHTML;
+
+    // ProseMirror
+    setBlockType(mySchema.nodes.heading, { level })(view.state, view.dispatch);
+    view.focus();
+
+    div.remove();
+  });
+}
+
+function getHeadingOptionsHTML() {
+  return `
+  <button class="heading-option" data-level="1">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
         <path fill="currentColor" d="M6 16.5q-.214 0-.357-.144T5.5 16V8q0-.213.144-.356t.357-.144t.356.144T6.5 8v3.5h5V8q0-.213.144-.356t.357-.144t.356.144T12.5 8v8q0 .213-.144.356t-.357.144t-.356-.144T11.5 16v-3.5h-5V16q0 .213-.144.356t-.357.144m11 0q-.212 0-.356-.144T16.5 16V8.5H15q-.213 0-.356-.144t-.144-.357t.144-.356T15 7.5h1.683q.357 0 .587.232t.23.576V16q0 .213-.144.356t-.357.144"/>
       </svg>
@@ -468,5 +507,15 @@ const isClickedHeadingButton = event.target.closest('#btn-heading');
         </svg>
     </button>
   `;
-  document.getElementById('heading-container').appendChild(div);
-})
+}
+
+document.getElementById('undoBtn').onclick = () => {
+  undo(view.state, view.dispatch);
+  view.focus();
+}
+document.getElementById('   ').onclick = () => {
+  redo(view.state, view.dispatch);
+  view.focus();
+}
+
+
