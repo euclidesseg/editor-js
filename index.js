@@ -1,8 +1,9 @@
-import { EditorState } from "https://esm.sh/prosemirror-state";
+import { EditorState,Plugin } from "https://esm.sh/prosemirror-state";
 import { EditorView } from "https://esm.sh/prosemirror-view";
 import { Schema, DOMParser } from "https://esm.sh/prosemirror-model";
 import { schema } from "https://esm.sh/prosemirror-schema-basic";
-import { history, undo, redo } from "https://esm.sh/prosemirror-history";
+
+import { history, undo, redo, undoDepth, redoDepth } from "https://esm.sh/prosemirror-history";
 import { keymap } from "https://esm.sh/prosemirror-keymap";
 import { baseKeymap } from "https://esm.sh/prosemirror-commands";
 import { toggleMark, setBlockType, chainCommands } from "https://esm.sh/prosemirror-commands";
@@ -322,10 +323,26 @@ const myKeymap = keymap({
   "Mod-i": toggleMark(mySchema.marks.em),
   "Mod-z": undo,
   "Mod-y": redo,
+  "Shift-Mod-z": redo, // 🔥 Mac usa este
   // agrega una nuevo item de lista
   "Enter": splitListItem(mySchema.nodes.list_item),
 });
 
+
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+
+// actualizar botones de undo/redo
+const updatePlugin = new Plugin({
+  view() {
+    return {
+      update() {
+        undoBtn.disabled = undoDepth(view.state) === 0;
+        redoBtn.disabled = redoDepth(view.state) === 0;
+      }
+    }
+  }
+});
 
 // Los plugins son los "poderes" del editor:
 // history → undo/redo
@@ -333,8 +350,11 @@ const myKeymap = keymap({
 const plugins = [
   history(),
   myKeymap,
-  keymap(baseKeymap)
+  keymap(baseKeymap),
+  updatePlugin
 ];
+
+
 
 // creacion del estado del editor
 const state = EditorState.create({
@@ -348,7 +368,8 @@ const view = new EditorView(document.querySelector("#editor"), {
   attributes: { class: "euclides-editor" }
 });
 
-
+undoBtn.disabled = undoDepth(view.state) === 0;
+redoBtn.disabled = redoDepth(view.state) === 0;   
 
 
 
@@ -509,13 +530,21 @@ function getHeadingOptionsHTML() {
   `;
 }
 
-document.getElementById('undoBtn').onclick = () => {
-  undo(view.state, view.dispatch);
-  view.focus();
-}
-document.getElementById('redoBtn').onclick = () => {
-  redo(view.state, view.dispatch);
-  view.focus();
-}
 
 
+undoBtn.addEventListener('click', () => {
+  if (undo(view.state, view.dispatch)) {
+    view.focus();
+  }
+});
+
+redoBtn.addEventListener('click', () => {
+  if (redo(view.state, view.dispatch)) {
+    view.focus();
+  }
+});
+
+
+
+
+console.log(view.state);
