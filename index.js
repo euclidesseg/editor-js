@@ -498,8 +498,7 @@ function createHeadingMenu() {
     headingBtn.querySelector('span').innerHTML = svg.outerHTML;
 
     // ProseMirror
-    setBlockType(mySchema.nodes.heading, { level })(view.state, view.dispatch);
-    view.focus();
+   turnIntoHeading(level)
 
     div.remove();
   });
@@ -544,7 +543,35 @@ redoBtn.addEventListener('click', () => {
   }
 });
 
+// TODO siguientes dod funciones para pasar de heading a lista no se usan
+function turnIntoBulletList() {
+  const { state, dispatch } = view;
 
+  wrapInList(mySchema.nodes.bullet_list)(state, dispatch);
+  view.focus();
+}
 
+function turnIntoOrderedList() {
+  const { state, dispatch } = view;
+
+  wrapInList(mySchema.nodes.ordered_list)(state, dispatch);
+  view.focus();
+}
+
+function turnIntoHeading(level) {
+  const { state, dispatch } = view;
+
+  // 1️⃣ Saca el contenido de la lista
+  liftListItem(mySchema.nodes.list_item)(state, dispatch);
+
+  // 2️⃣ Convierte a heading
+  setBlockType(mySchema.nodes.heading, { level })(state, dispatch);
+
+  view.focus();
+}
+
+// todo implementar shift + enter para permanecer en un li pero en una nueva linea
+
+// Ver el estado del editor en consola
 
 console.log(view.state);
