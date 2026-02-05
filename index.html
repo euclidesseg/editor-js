@@ -87,6 +87,8 @@
         background-color: white;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
+        position: relative;
     }
 
     #editor {
@@ -96,6 +98,7 @@
     #editor div[contenteditable="true"] {
         height: 100%;
         padding: .5rem;
+        overflow-y: auto;
     }
 
     #editor div[contenteditable="true"]:focus-visible {
@@ -113,9 +116,13 @@
         display: flex;
         align-items: center;
         gap: .2rem;
-        padding: .3erm;
+        padding: .3rem;
         border-bottom: 1px solid var(--color-brand-lime);
         padding: .2rem .4rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: white;
     }
 
     .euclides-editor-nav button {

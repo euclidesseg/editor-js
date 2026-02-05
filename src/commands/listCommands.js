@@ -1,33 +1,44 @@
 import { wrapInList, liftListItem } from "https://esm.sh/prosemirror-schema-list";
 
-
 export function switchList(listType) {
   return function(state, dispatch) {
-    const { $from } = state.selection;
+    const { schema, selection } = state;
+    const { $from, from, to } = selection;
 
-    // Buscar si estamos dentro de una lista
-    for (let d = $from.depth; d > 0; d--) {
-      const node = $from.node(d);
+    let tr = state.tr;
 
-      if (node.type === state.schema.nodes.bullet_list ||
-          node.type === state.schema.nodes.ordered_list) {
+    // 🔹 Si es heading → convertir a paragraph EN ESTE MISMO TR
+    if ($from.parent.type === schema.nodes.heading) {
+      tr = tr.setBlockType(from, to, schema.nodes.paragraph);
+    }
 
-        // 🔁 Si ya es del tipo que queremos → salir de la lista
+    // 🔹 Aplicamos visualmente pero SIN crear nuevo state
+    if (dispatch) dispatch(tr);
+
+    // 🔹 Ahora usamos el NUEVO state del editor
+    const newState = state.apply(tr); // ⚠️ solo para cálculo, no para dispatch
+
+    const { $from: newFrom } = newState.selection;
+
+    // 🔹 Si ya está en lista
+    for (let d = newFrom.depth; d > 0; d--) {
+      const node = newFrom.node(d);
+
+      if (node.type === schema.nodes.bullet_list ||
+          node.type === schema.nodes.ordered_list) {
+
         if (node.type === listType) {
-          return liftListItem(state.schema.nodes.list_item)(state, dispatch);
+          return liftListItem(schema.nodes.list_item)(newState, dispatch);
         }
 
-        // 🔄 Si es otra lista → convertir
         if (dispatch) {
-          dispatch(
-            state.tr.setNodeMarkup($from.before(d), listType)
-          );
+          dispatch(newState.tr.setNodeMarkup(newFrom.before(d), listType));
         }
         return true;
       }
     }
 
-    // 📌 No hay lista → crear nueva
-    return wrapInList(listType)(state, dispatch);
+    // 🔹 No estaba en lista → envolver
+    return wrapInList(listType)(newState, dispatch);
   };
 }

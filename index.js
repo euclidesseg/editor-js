@@ -315,6 +315,16 @@ const mySchema = new Schema({
 });
 
 console.log(mySchema)
+
+const cmd = (state, dispatch) => {
+  const brType = state.schema.nodes.hard_break;
+  if (!brType) return false;
+  if (dispatch) {
+    dispatch(state.tr.replaceSelectionWith(brType.create()).scrollIntoView());
+  }
+  return true;
+};  
+
 // Aquí conectamos combinaciones de teclas con comandos del editor
 // "Mod" significa Ctrl (Windows) o Cmd (Mac)
 const myKeymap = keymap({
@@ -324,9 +334,12 @@ const myKeymap = keymap({
   "Mod-z": undo,
   "Mod-y": redo,
   "Shift-Mod-z": redo, // 🔥 Mac usa este
+   "Shift-Enter": cmd,
   // agrega una nuevo item de lista
   "Enter": splitListItem(mySchema.nodes.list_item),
 });
+
+
 
 
 const undoBtn = document.getElementById('undoBtn');
@@ -560,13 +573,29 @@ function turnIntoOrderedList() {
 
 function turnIntoHeading(level) {
   const { state, dispatch } = view;
+  const { $from, $to } = state.selection;
 
-  // 1️⃣ Saca el contenido de la lista
-  liftListItem(mySchema.nodes.list_item)(state, dispatch);
+  // 1. Encontramos el rango que abarca el bloque actual (el li o p)
+  const range = $from.blockRange($to);
+  if (!range) return;
 
-  // 2️⃣ Convierte a heading
-  setBlockType(mySchema.nodes.heading, { level })(state, dispatch);
+  let tr = state.tr;
 
+  // 2. Si el padre es un list_item, tenemos que "elevar" el contenido
+  // Subimos por la profundidad para ver si estamos dentro de una lista
+  if (range.depth > 0 && $from.node(range.depth - 1).type.name.includes("list")) {
+    // lift() calcula cómo mover el rango a un nivel superior
+    // Buscamos el "target" (el nivel al que queremos subir, usualmente 0 para el Doc)
+    const target = 0; 
+    tr.lift(range, target);
+  }
+
+  // 3. Una vez fuera (o si ya estaba fuera), aplicamos el Heading
+  // Es vital mapear la selección porque el documento cambió tras el lift
+  const nodeType = mySchema.nodes.heading;
+  tr.setBlockType(tr.mapping.map(range.start), tr.mapping.map(range.end), nodeType, { level });
+
+  if (dispatch) dispatch(tr);
   view.focus();
 }
 
