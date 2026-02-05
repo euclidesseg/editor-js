@@ -566,29 +566,6 @@ function turnIntoBulletList() {
 
 function turnIntoOrderedList() {
   const { state, dispatch } = view;
-<<<<<<< HEAD
-=======
-
-  wrapInList(mySchema.nodes.ordered_list)(state, dispatch);
-  view.focus();
-}
-
-function turnIntoHeading(level) {
-  const { state, dispatch } = view;
-
-  // 1️⃣ Saca el contenido de la lista
-  liftListItem(mySchema.nodes.list_item)(state, dispatch);
-
-  // 2️⃣ Convierte a heading
-  setBlockType(mySchema.nodes.heading, { level })(state, dispatch);
-
-  view.focus();
-}
-
-// todo implementar shift + enter para permanecer en un li pero en una nueva linea
-
-// Ver el estado del editor en consola
->>>>>>> 4806a8c2655724efda5af172a2e1132083207b10
 
   wrapInList(mySchema.nodes.ordered_list)(state, dispatch);
   view.focus();
