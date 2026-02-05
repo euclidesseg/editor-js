@@ -333,6 +333,7 @@ const myKeymap = keymap({
   "Mod-i": toggleMark(mySchema.marks.em),
   "Mod-z": undo,
   "Mod-y": redo,
+  
   "Shift-Mod-z": redo, // 🔥 Mac usa este
    "Shift-Enter": cmd,
   // agrega una nuevo item de lista
@@ -459,10 +460,8 @@ document.getElementById("linkBtn").onclick = () => {
 
   if (!url) return;
 
-  toggleMark(
-    mySchema.marks.link,
-    { href: url, title: url } // 👈 atributos
-  )(view.state, view.dispatch);
+  toggleMark(mySchema.marks.link, { href: url, title: url }) // 👈 atributos
+  (view.state, view.dispatch);
 
   view.focus();
 };
@@ -556,20 +555,6 @@ redoBtn.addEventListener('click', () => {
   }
 });
 
-// TODO siguientes dod funciones para pasar de heading a lista no se usan
-function turnIntoBulletList() {
-  const { state, dispatch } = view;
-
-  wrapInList(mySchema.nodes.bullet_list)(state, dispatch);
-  view.focus();
-}
-
-function turnIntoOrderedList() {
-  const { state, dispatch } = view;
-
-  wrapInList(mySchema.nodes.ordered_list)(state, dispatch);
-  view.focus();
-}
 
 function turnIntoHeading(level) {
   const { state, dispatch } = view;

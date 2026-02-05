@@ -12,16 +12,19 @@
         --color-brand-lime: #d5ee3c;
     }
 
-    body{
+    body {
         padding: 1.5rem;
-        background-color: rgb(241 245 249);;
+        background-color: rgb(241 245 249);
+        ;
         display: flex;
         justify-content: center;
-        align-items: c;
+        align-items: center;
     }
-    .euclides-editor-nav button{
+
+    .euclides-editor-nav button {
         border: none;
     }
+
     .ProseMirror-menubar {
         min-height: 57px !important;
         display: flex;
@@ -93,12 +96,51 @@
 
     #editor {
         height: 100%;
+        overflow-y: auto;
     }
+
+    #editor::-webkit-scrollbar {
+        width: 8px;
+        /* Tamaño del scroll en vertical */
+        height: 8px;
+        /* Tamaño del scroll en horizontal */
+        display: block;
+        /* Ocultar scroll */
+    }
+
+    /* Ponemos un color de fondo y redondeamos las esquinas del thumb */
+    #editor::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--color-brand-lime) 70%, transparent);
+        border-radius: 4px;
+    }
+    
+    /* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
+    #editor::-webkit-scrollbar-thumb:hover {
+        background: var(--color-brand-lime);
+        box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    #editor::-webkit-scrollbar-track {
+        background: color-mix(in oklab, var(--color-brand-lime) 40%, transparent);
+        border-radius: 4px;
+    }
+
+    /* Cambiamos el fondo cuando esté en active o hover */
+    #editor::-webkit-scrollbar-track:hover,
+    #editor::-webkit-scrollbar-track:active {
+        background: color-mix(in oklab, var(--color-brand-lime) 30%, transparent);
+    }
+
+
+    #editor::-webkit-scrollbar-track {
+        background: color-mix(in oklab, var(--color-brand-lime) 20%, transparent);
+        border-radius: 4px;
+    }
+
 
     #editor div[contenteditable="true"] {
         height: 100%;
         padding: .5rem;
-        overflow-y: auto;
     }
 
     #editor div[contenteditable="true"]:focus-visible {
@@ -141,6 +183,10 @@
         font-weight: bold;
     }
 
+    .euclides-editor.ProseMirror{
+        width: 82%;
+        margin: 0 auto;
+    }
     .euclides-editor.ProseMirror pre {
         background-color: color-mix(in oklab, var(--color-brand-blue) 5%, transparent);
         margin: 1.5rem 0;
@@ -260,12 +306,14 @@
             </button>
             <button id="undoBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M7.404 18v-1h7.254q1.556 0 2.65-1.067q1.096-1.067 1.096-2.606t-1.095-2.596q-1.096-1.058-2.651-1.058H6.916l2.965 2.965l-.708.708L5 9.173L9.173 5l.708.708l-2.965 2.965h7.742q1.963 0 3.355 1.354q1.39 1.354 1.39 3.3t-1.39 3.31T14.657 18z"/>
+                    <path fill="currentColor"
+                        d="M7.404 18v-1h7.254q1.556 0 2.65-1.067q1.096-1.067 1.096-2.606t-1.095-2.596q-1.096-1.058-2.651-1.058H6.916l2.965 2.965l-.708.708L5 9.173L9.173 5l.708.708l-2.965 2.965h7.742q1.963 0 3.355 1.354q1.39 1.354 1.39 3.3t-1.39 3.31T14.657 18z" />
                 </svg>
             </button>
-            <button id="redoBtn"    >
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M9.342 18q-1.963 0-3.355-1.364t-1.39-3.309t1.39-3.3Q7.38 8.673 9.343 8.673h7.743L14.12 5.708L14.828 5L19 9.173l-4.173 4.173l-.708-.707l2.966-2.966H9.342q-1.556 0-2.65 1.058q-1.096 1.058-1.096 2.596t1.095 2.606Q7.787 17 9.342 17h7.254v1z"/>
+            <button id="redoBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M9.342 18q-1.963 0-3.355-1.364t-1.39-3.309t1.39-3.3Q7.38 8.673 9.343 8.673h7.743L14.12 5.708L14.828 5L19 9.173l-4.173 4.173l-.708-.707l2.966-2.966H9.342q-1.556 0-2.65 1.058q-1.096 1.058-1.096 2.596t1.095 2.606Q7.787 17 9.342 17h7.254v1z" />
                 </svg>
             </button>
         </nav>
