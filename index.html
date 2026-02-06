@@ -113,7 +113,7 @@
         background: color-mix(in oklab, var(--color-brand-lime) 70%, transparent);
         border-radius: 4px;
     }
-    
+
     /* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
     #editor::-webkit-scrollbar-thumb:hover {
         background: var(--color-brand-lime);
@@ -183,10 +183,11 @@
         font-weight: bold;
     }
 
-    .euclides-editor.ProseMirror{
+    .euclides-editor.ProseMirror {
         width: 82%;
         margin: 0 auto;
     }
+
     .euclides-editor.ProseMirror pre {
         background-color: color-mix(in oklab, var(--color-brand-blue) 5%, transparent);
         margin: 1.5rem 0;
@@ -198,6 +199,11 @@
     .euclides-editor h1 {
         font-size: 1.5em;
         font-weight: 700;
+    }
+
+    .euclides-editor.ProseMirror pre {
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 
     #heading-container {

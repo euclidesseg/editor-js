@@ -316,6 +316,7 @@ const mySchema = new Schema({
 
 console.log(mySchema)
 
+// Comando para insertar un salto de línea en una lista sin salir de ella
 const cmd = (state, dispatch) => {
   const brType = state.schema.nodes.hard_break;
   if (!brType) return false;
@@ -324,6 +325,7 @@ const cmd = (state, dispatch) => {
   }
   return true;
 };  
+
 
 // Aquí conectamos combinaciones de teclas con comandos del editor
 // "Mod" significa Ctrl (Windows) o Cmd (Mac)
@@ -460,9 +462,7 @@ document.getElementById("linkBtn").onclick = () => {
 
   if (!url) return;
 
-  toggleMark(mySchema.marks.link, { href: url, title: url }) // 👈 atributos
-  (view.state, view.dispatch);
-
+  toggleMark(mySchema.marks.link, { href: url, title: url })(view.state, view.dispatch);
   view.focus();
 };
 
@@ -584,7 +584,6 @@ function turnIntoHeading(level) {
   view.focus();
 }
 
-// todo implementar shift + enter para permanecer en un li pero en una nueva linea
 
 // Ver el estado del editor en consola
 
