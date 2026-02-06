@@ -10,6 +10,7 @@ import { toggleMark, setBlockType, chainCommands } from "https://esm.sh/prosemir
 import { addListNodes } from "https://esm.sh/prosemirror-schema-list";
 import { wrapInList, liftListItem } from "https://esm.sh/prosemirror-schema-list";
 import { splitListItem } from "https://esm.sh/prosemirror-schema-list";
+import { TextSelection } from "prosemirror-state";
 
 import { switchList } from "./src/commands/listCommands.js";
 
@@ -360,6 +361,7 @@ const updatePlugin = new Plugin({
   }
 });
 
+
 // Los plugins son los "poderes" del editor:
 // history → undo/redo
 // keymaps → atajos
@@ -459,12 +461,52 @@ document.getElementById("strikeBtn").onclick = () => {
 
 document.getElementById("linkBtn").onclick = () => {
   const url = prompt("Introduce la URL");
-
   if (!url) return;
 
-  toggleMark(mySchema.marks.link, { href: url, title: url })(view.state, view.dispatch);
+  const { state, dispatch } = view;
+  const { from, empty } = state.selection;
+
+  const href = url.startsWith("http")
+    ? url
+    : "https://" + url;
+
+  // 🔹 Caso: NO hay selección
+  if (empty) {
+    const tr = state.tr.insertText(href, from);
+
+    tr.addMark(
+      from,
+      from + href.length,
+      schema.marks.link.create({
+        href,
+        title: href
+      })
+    );
+
+    dispatch(tr);
+    view.focus();
+    return;
+  }
+
+  // 🔹 Caso: SÍ hay selección
+  const selectedText = state.doc.textBetween(
+    state.selection.from,
+    state.selection.to,
+    " "
+  );
+
+  toggleMark(
+    schema.marks.link,
+    {
+      href,
+      title: selectedText
+    }
+  )(state, dispatch);
+
   view.focus();
 };
+
+
 
 
 
